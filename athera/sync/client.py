@@ -29,8 +29,12 @@ class Client(object):
                   Other regions may have to perform a 'rescan' on the mount_id to detect the newly uploaded file.
         'token':  JSON Web Token. See athera.auth.generate_jwt.py on how to generate a JWT.
         """
+
+        self.url = os.getenv("ATHERA_SYNC_URL_OVERRIDE")
         
-        self.url = REGION_URLS.get(region)
+        if not self.url:
+            self.url = REGION_URLS.get(region)
+        
         if not self.url:
             raise ValueError("Unknown region. Please use one of the following: {}".format(REGION_URLS.keys()))
 
