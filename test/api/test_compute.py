@@ -306,6 +306,7 @@ class ComputeTest(unittest.TestCase):
     def wait_for_job_status(self, job_id, desired_status, timeout=60):
         job_status = ""
         wait_period = 10
+        time.sleep(1)
 
         while timeout:
             response = compute.get_job(

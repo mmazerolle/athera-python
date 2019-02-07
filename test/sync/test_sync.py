@@ -4,7 +4,8 @@ import os
 import logging
 import sys
 import uuid
-
+import datetime
+import time
 
 from settings import environment, compute_arguments
 
@@ -36,7 +37,7 @@ class SyncTest(unittest.TestCase):
         """
         filesGenerator = self.client.get_files(
             environment.ATHERA_API_TEST_GROUP_ID,
-            environment.ATHERA_API_TEST_REMOTE_ASSETS_MOUNT_ID,
+            environment.ATHERA_API_TEST_SYNC_API_MOUNT_ID,
             path=""
             )
 
@@ -55,7 +56,7 @@ class SyncTest(unittest.TestCase):
         # List files in remote assets
         filesGenerator = self.client.get_files(
             environment.ATHERA_API_TEST_GROUP_ID,
-            environment.ATHERA_API_TEST_REMOTE_ASSETS_MOUNT_ID,
+            environment.ATHERA_API_TEST_SYNC_API_MOUNT_ID,
             path=environment.ATHERA_API_TEST_REMOTE_ASSETS_FOLDER
             )
 
@@ -67,12 +68,15 @@ class SyncTest(unittest.TestCase):
         for sirius_file in files_to_download:
             download_path = os.path.join(environment.ATHERA_API_TEST_LOCAL_ASSETS_FOLDER, sirius_file.file.name)
             with open(download_path, "wb+") as f:
+                startTime = datetime.datetime.now()
                 err = self.client.download_to_file(
                     environment.ATHERA_API_TEST_GROUP_ID,
-                    environment.ATHERA_API_TEST_REMOTE_ASSETS_MOUNT_ID,
+                    environment.ATHERA_API_TEST_SYNC_API_MOUNT_ID,
                     f,
                     path=sirius_file.file.path, 
                 )
+                duration = datetime.datetime.now() - startTime
+                print("Download file {}, Elapsed time: {}". format(sirius_file.file.name, duration))
                 self.assertIsNone(err, "Got unexpected error: {}".format(err))
             stats = os.stat(download_path) 
             self.assertEqual(
@@ -80,7 +84,6 @@ class SyncTest(unittest.TestCase):
                 sirius_file.file.size, 
                 "Expected downloaded file ({}) to contains 30 bytes; It contains instead {} bytes".format(environment.ATHERA_API_TEST_DONWLOAD_FILE_PATH, stats.st_size)
             )
-           
 
     def test_download_file_with_folder_path(self):
         """ Negative Testing - Download a folder.
@@ -88,9 +91,10 @@ class SyncTest(unittest.TestCase):
         """
         download_path = "downloaded_file.txt"
         with open(download_path, "wb+") as f:
+            print(date.now())
             err = self.client.download_to_file(
                 environment.ATHERA_API_TEST_GROUP_ID,
-                environment.ATHERA_API_TEST_GROUP_MOUNT_ID,
+                environment.ATHERA_API_TEST_SYNC_API_MOUNT_ID,
                 f,
                 path=environment.ATHERA_API_TEST_REMOTE_ASSETS_FOLDER,
                 chunk_size=5
@@ -107,7 +111,7 @@ class SyncTest(unittest.TestCase):
             try:
                 err = self.client.download_to_file(
                     environment.ATHERA_API_TEST_GROUP_ID,
-                    environment.ATHERA_API_TEST_REMOTE_ASSETS_MOUNT_ID,
+                    environment.ATHERA_API_TEST_SYNC_API_MOUNT_ID,
                     f,
                     path="/", 
                     chunk_size=1024*1024*1024
@@ -123,14 +127,17 @@ class SyncTest(unittest.TestCase):
             destination_path = "uploads/" + filename
             filepath = os.path.join(environment.ATHERA_API_TEST_LOCAL_ASSETS_FOLDER, filename)
             with open(filepath, "rb") as f:
+                startTime = datetime.datetime.now()
                 _, err = self.client.upload_file(
                     environment.ATHERA_API_TEST_GROUP_ID,
-                    environment.ATHERA_API_TEST_GROUP_MOUNT_ID,
+                    environment.ATHERA_API_TEST_SYNC_API_MOUNT_ID,
                     f,
                     destination_path=destination_path,
                 )
+                duration = datetime.datetime.now() - startTime
+                print("Uploaded file {}, Elapsed time: {}". format(filename, duration))
                 self.assertIsNone(err, "Got unexpected error: {}".format(err))
-
+                
     def test_upload_wrong_chunk_size(self):
         """ Test Upload files in assets folder: Need test_download to be successful        
         """

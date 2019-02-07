@@ -165,19 +165,19 @@ class StorageTest(unittest.TestCase):
             print("Still in progress ...")
         self.assertGreater(timeout, 0)
 
-    def test_dropcache_driver(self):
-        """ Positive test - List the mounts the authenticated user has in this group """
-        driver_id = environment.ATHERA_API_TEST_HOME_DRIVER_ID
-        status = self.get_driver_indexing_status(driver_id)
-        self.assertEqual(status['indexingInProgress'], False)
+    # def test_dropcache_driver(self):
+    #     """ Positive test - List the mounts the authenticated user has in this group """
+    #     driver_id = environment.ATHERA_API_TEST_HOME_DRIVER_ID
+    #     status = self.get_driver_indexing_status(driver_id)
+    #     self.assertEqual(status['indexingInProgress'], False)
         
-        response = storage.dropcache_driver(
-            environment.ATHERA_API_TEST_BASE_URL,
-            environment.ATHERA_API_TEST_GROUP_ID,
-            self.token,
-            driver_id,
-        )
-        self.assertEqual(response.status_code, codes.ok)
+    #     response = storage.dropcache_driver(
+    #         environment.ATHERA_API_TEST_BASE_URL,
+    #         environment.ATHERA_API_TEST_GROUP_ID,
+    #         self.token,
+    #         driver_id,
+    #     )
+    #     self.assertEqual(response.status_code, codes.ok)
 
 
     def get_driver_indexing_status(self, driver_id):
